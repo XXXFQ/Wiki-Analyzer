@@ -1,26 +1,37 @@
 import re
 import glob
-import MeCab
 import unicodedata
+
+import MeCab
 from tqdm import tqdm
 from bs4 import BeautifulSoup
+from gensim.models import Word2Vec, KeyedVectors
 
-from .wiki_database import WikiDatabase
-from .config import (
+from .corpus_manager import SQLiteCorpus
+from .database.wiki_table_manager import WikiTableManager
+from .database.constants import (
+    CONTENTS_TABLE,
     DB_PATH,
-    ID_KEY,
-    TITLE_KEY,
-    WIKI_TITLE_TABLE,
-    DOCUMENT_KEY,
-    WIKI_DOCUMENT_TABLE
 )
 
-def init_db(wiki_database : WikiDatabase):
+# MeCabの初期化
+_tagger = MeCab.Tagger("-Owakati")
+
+def setup_database(wiki_db : WikiTableManager, wiki_data_paths : list = None):
     '''
     データベースを初期化する
-    '''
-    wiki_data_paths = sorted(glob.iglob("data/text/*/wiki_*"))
     
+    Parameters
+    ----------
+    wiki_db : WikiTableManager
+        WikiTableManagerオブジェクト
+    wiki_data_paths : list
+        データベースに追加するWikipediaのデータのパス
+    '''
+    wiki_db.create_tables()
+    wiki_db.create_indexes()
+    
+    # データベースにWikipediaのデータを追加
     for wiki_data in tqdm(wiki_data_paths):
         with open(wiki_data, 'r', encoding='UTF-8') as infile:
             xml_text = infile.read()
@@ -28,90 +39,85 @@ def init_db(wiki_database : WikiDatabase):
         soup = BeautifulSoup(xml_text, 'lxml')
         docs = soup.find_all('doc')
         
+        # ページごとにデータベースに追加
         for doc in docs:
-            text = re.sub(r'^\n.+\n\n', '', doc.text)
-            wiki_database.insert_titles(doc['id'], doc['title'])
-            wiki_database.insert_wiki_texts(doc['id'], text)
+            text = re.sub(r'^\n.+\n\n', '', doc.text) # ページの先頭にある不要な文字列を削除
+            wiki_db.insert_page(doc['id'], doc['url'], doc['title'])
+            wiki_db.insert_contents(doc['id'], text)
     
-    wiki_database.connection.commit()
-    del wiki_database
+    # コミット
+    wiki_db.commit()
 
-def morphological_analysis_wiki(wiki_database : WikiDatabase):
+def parse_wiki_text(wiki_db : WikiTableManager):
     '''
-    データベースにあるテキストを形態素解析する
+    Wikipediaの記事を形態素解析する
+    
+    Parameters
+    ----------
+    wiki_db : WikiTableManager
+        WikiTableManagerオブジェクト
     '''
-    sql = f'''SELECT * FROM {WIKI_DOCUMENT_TABLE}'''
-    wiki_database.cursor.execute(sql)
-    documents = wiki_database.cursor.fetchall()
-    tagger = MeCab.Tagger('-ochasen')
+    sql = f"SELECT * FROM {CONTENTS_TABLE}"
+    rows = wiki_db.execute_query(sql)
     
-    for document in tqdm(documents):
-        normalized_text = unicodedata.normalize('NFKC', document[1])
-        wiki_database.insert_analysis(document[0], tagger.parse(normalized_text))
+    for page_id, document in tqdm(rows.fetchall()):
+        normalized_text = unicodedata.normalize('NFKC', document)
+        wakati = _mecab_analyzer(text=normalized_text)
+        wiki_db.insert_wakati(page_id, "\t".join(wakati))
     
-    wiki_database.connection.commit()
-    del wiki_database
+    wiki_db.commit()
 
-"""
-def morphological_analysis_wiki(wiki_database : WikiDatabase):
+def _mecab_analyzer(text: str) -> list:
     '''
-    データベースにあるテキストを形態素解析する
+    テキストを形態素解析する
+    
+    Parameters
+    ----------
+    text : str
+        テキスト
+    
+    Returns
+    -------
+    list
+        形態素解析結果
     '''
-    sql = f'''SELECT {DOCUMENT_KEY} FROM {WIKI_DOCUMENT_TABLE} LIMIT 1'''
-    wiki_database.cursor.execute(sql)
-    texts = wiki_database.cursor.fetchall()
-    
-    tagger = MeCab.Tagger('-ochasen')
-    
-    for text in tqdm(texts):
-        normalized_text = unicodedata.normalize('NFKC', text[0])
-        node = tagger.parseToNode(normalized_text)
-        doc = []
-        pos1 = []
-        pos2 = []
-        while node:
-            doc.append(node.surface)
-            pos1.append(node.feature.split(',')[0])
-            pos2.append(node.feature.split(',')[1])
-            node = node.next
-        
-        wiki_database.insert_analysis(doc, pos1, pos2)
-    
-    # wiki_database.connection.commit()
-    # del wiki_database
-    pass
-"""
+    global _tagger
+    node = _tagger.parseToNode(text)
+    tokens = []
+    while node:
+        surface = node.surface
+        if surface != "":
+            tokens.append(surface)
+        node = node.next
+    return tokens
 
 def main():
-    wiki_database = WikiDatabase(DB_PATH)
+    wiki_db = WikiTableManager(DB_PATH)
+    wiki_data_paths = sorted(glob.iglob("data/text/*/wiki_*"))
     
     # データベースを初期化
-    # init_db(wiki_database)
+    # setup_database(wiki_db, wiki_data_paths)
     
-    # 形態素解析
-    morphological_analysis_wiki(wiki_database)
+    # Wikipediaの記事を形態素解析
+    parse_wiki_text(wiki_db)
     
-    '''
-    with open('data/pos-id.def', 'r', encoding='UTF-8') as infile:
-        pos_id_def = infile.read()
-        
-        regex = re.compile(r'^(\D+),(\D+) (\d+)$')
-        
-        for line in pos_id_def.split('\n'):
-            if line == '':
-                continue
-            
-            pos_1, pos_2 = regex.match(line).group(1, 2)
-            pos_id = regex.match(line).group(3)
-            wiki_database.insert_pos(pos_id, pos_1, pos_2)
-    '''
+    # コーパスを読み込む
+    corpus = SQLiteCorpus(DB_PATH)
+
+    # Word2Vecモデルの訓練
+    model = Word2Vec(sentences=corpus, vector_size=200, window=15, min_count=20, workers=4)
+
+    # モデルを保存する
+    model.save("wiki.model")
+
+    # モデルのロードとテスト
+    model = Word2Vec.load("wiki.model")
     
-    # テスト用
-    sql = f'''
-    SELECT COUNT(*) FROM {WIKI_DOCUMENT_TABLE}
-    WHERE {DOCUMENT_KEY} LIKE '%群馬県%'
-    '''
+    wv = KeyedVectors.load_word2vec_format('wiki.model', binary=True)
+    results = wv.most_similar(positive='アンパサンド')
+    for result in results:
+        print(result)
 
 __all__ = [
-    'main'
+    'main',
 ]
