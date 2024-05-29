@@ -91,23 +91,17 @@ class WikiTableManager(DatabaseManager):
         '''
         インデックスを作成する
         '''
-        self.create_index(PAGES_TABLE, PAGES_URL_KEY)
-        self.create_index(CONTENTS_TABLE, CONTENTS_TEXT_KEY)
-        self.create_index(WAKATI_TABLE, WAKATI_TEXT_KEY)
-    
-    def create_index(self, table_name: str, column_name: str):
-        '''
-        インデックスを作成する
+        indexes = [
+            (PAGES_TABLE, PAGES_URL_KEY),
+            (PAGES_TABLE, PAGE_TITLE_KEY),
+            (CONTENTS_TABLE, CONTENTS_TEXT_KEY),
+            (WAKATI_TABLE, WAKATI_TEXT_KEY)
+        ]
         
-        Parameters
-        ----------
-        table_name : str
-            テーブル名
-        column_name : str
-            カラム名
-        '''
-        query = f"CREATE INDEX IF NOT EXISTS {table_name}_{column_name}_index ON {table_name} ({column_name})"
-        self.execute_query(query)
+        for table, column in indexes:
+            index_name = f'{table}_{column}_idx'
+            query = f'CREATE INDEX IF NOT EXISTS {index_name} ON {table}({column})'
+            self.execute_query(query)
     
     def insert_page(self, page_id: int, url: str, title: str):
         '''
