@@ -1,5 +1,3 @@
-from tqdm import tqdm
-
 from .database.wiki_table_manager import WikiTableManager
 from .database.constants import (
     WAKATI_TABLE,
@@ -33,5 +31,5 @@ class SQLiteCorpus:
             rows = wiki_db.execute_query(sql)
             
             # 結果を1行ずつ処理し、形態素解析結果を返す
-            for row in tqdm(rows.fetchall(), desc="Loading corpus"):
+            for row in rows.fetchall():
                 yield row[0].split()
