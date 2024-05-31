@@ -1,5 +1,3 @@
-from pathlib import Path
-
 # テーブル名
 PAGES_TABLE = 'pages'
 CONTENTS_TABLE = 'contents'
@@ -16,6 +14,3 @@ CONTENTS_TEXT_KEY = 'text'
 
 WAKATI_PRIMARY_KEY = 'page_id'
 WAKATI_TEXT_KEY = 'wakati'
-
-DATA_DIR = Path('data')
-DB_PATH = DATA_DIR / 'wikipedia.db'
