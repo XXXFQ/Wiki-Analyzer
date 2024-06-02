@@ -1,0 +1,1 @@
+@py -m "wiki_analyzer" %*
