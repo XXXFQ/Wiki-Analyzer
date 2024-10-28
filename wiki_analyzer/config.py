@@ -1,8 +1,18 @@
+import platform
 from pathlib import Path
 
 # データの保存ディレクトリ
 DATA_DIR = Path('./data')
 DATA_DIR.mkdir(exist_ok=True)
+
+# OSの種類
+_pf = platform.system()
+
+# MeCabの辞書のパスを、OSによって変更
+if _pf == 'Windows':
+    MECAB_NEOLOGD_PATH = Path(r"C:\Program Files (x86)\MeCab\dic\mecab-ipadic-neologd")
+else:
+    MECAB_NEOLOGD_PATH = Path("/var/lib/mecab/dic/mecab-ipadic-neologd")
 
 # Wikipediaのデータベースのパス
 DB_PATH = DATA_DIR / 'wikipedia.db'
