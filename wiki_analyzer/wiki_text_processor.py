@@ -5,11 +5,12 @@ import MeCab
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
+from .config import MECAB_NEOLOGD_PATH
 from .database.wiki_table_manager import WikiTableManager
 from .database.constants import CONTENTS_TABLE
 
 # MeCabの初期化
-_MECAB_TAGGER = MeCab.Tagger('-Owakati -d "C:/Program Files (x86)/MeCab/dic/ipadic" -u "C:/Program Files (x86)/MeCab/dic/NEologd/NEologd.20200910-u.dic"')
+_NEO_TAGGER = MeCab.Tagger(f'-Owakati -d "{MECAB_NEOLOGD_PATH}"')
 
 class WikiTextProcessor:
     def __init__(self, db_path):
@@ -89,7 +90,7 @@ class WikiTextProcessor:
         list
             形態素解析されたトークンのリスト
         '''
-        wakati_text = _MECAB_TAGGER.parse(text).strip().split()
+        wakati_text = _NEO_TAGGER.parse(text).strip().split()
         return wakati_text
     
     def _remove_symbols(self, text: str) -> str:
