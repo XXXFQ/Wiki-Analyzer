@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "wiki-analyzer"
+version = "0.1.0"
+description = ""
+authors = ["ARM0930 <72128692+XXXFQ@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+lxml = "^5.3.0"
+tqdm = "^4.67.0"
+beautifulsoup4 = "^4.12.3"
+wikiextractor = "^3.0.6"
+mecab-python3 = "^1.0.10"
+unidic-lite = "^1.0.8"
+poetry = "^1.8.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
