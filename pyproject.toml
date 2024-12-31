@@ -7,14 +7,19 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-lxml = "^5.3.0"
-tqdm = "^4.67.0"
 beautifulsoup4 = "^4.12.3"
-wikiextractor = "^3.0.6"
+gensim = "^4.3.3"
+lxml = "^5.3.0"
 mecab-python3 = "^1.0.10"
-unidic-lite = "^1.0.8"
 poetry = "^1.8.4"
+SudachiPy = "^0.6.9"
+sudachidict-core = "^20241021"
+tqdm = "^4.67.0"
+unidic-lite = "^1.0.8"
+wikiextractor = "^3.0.6"
 
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.29.5"
 
 [build-system]
 requires = ["poetry-core"]
