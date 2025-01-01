@@ -5,31 +5,41 @@ from .database.constants import (
 )
 
 class SQLiteCorpus:
-    def __init__(self, db_path):
+    '''
+    A class to create an iterable corpus from a SQLite database containing Wikipedia data.
+    '''
+    def __init__(self, database_path: str):
         '''
-        コンストラクタ
-        
+        Constructor for SQLiteCorpus.
+
         Parameters
         ----------
-        db_path : str
-            Wikipediaのデータベースのパス
-        
+        database_path : str
+            Path to the SQLite database containing Wikipedia data.
+
         Attributes
         ----------
         db_path : str
-            Wikipediaのデータベースのパス
+            Stores the path to the SQLite database.
         '''
-        self.db_path = db_path
+        self.db_path = database_path
 
     def __iter__(self):
         '''
-        コーパスをイテレータとして返す
+        Returns an iterator that yields tokenized text from the database.
+
+        Each line of tokenized text is split into tokens and yielded one by one.
+
+        Yields
+        ------
+        list of str
+            A list of tokens from each row of tokenized text in the database.
         '''
-        with WikiTableManager(self.db_path) as wiki_db:
-            # データベースに接続しクエリを実行
-            sql = f"SELECT {WAKATI_TEXT_KEY} FROM {WAKATI_TABLE}"
-            rows = wiki_db.execute_query(sql)
-            
-            # 結果を1行ずつ処理し、形態素解析結果を返す
+        with WikiTableManager(self.db_path) as db_manager:
+            # Query to retrieve tokenized text from the database
+            query = f"SELECT {WAKATI_TEXT_KEY} FROM {WAKATI_TABLE}"
+            rows = db_manager.execute_query(query)
+
+            # Process each row and yield the tokenized text
             for row in rows.fetchall():
                 yield row[0].split()
