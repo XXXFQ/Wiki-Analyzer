@@ -33,6 +33,15 @@ Use the following command to extract article content from the downloaded XML dat
 python -m wikiextractor.WikiExtractor jawiki-latest-pages-articles.xml.bz2
 ```
 
+## Building the Database File
+
+To build the database file, run the appropriate script based on your operating system:
+
+- **For Windows**: Run `Wiki-Analyzer.cmd`.
+- **For Linux**: Run `Wiki-Analyzer.sh`.
+
+The generated database file will be saved in the `data` directory.
+
 ## Environment Requirements
 
 * **Python**: 3.10
