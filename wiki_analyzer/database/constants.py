@@ -1,16 +1,12 @@
-# テーブル名
-PAGES_TABLE = 'pages'
-CONTENTS_TABLE = 'contents'
-WAKATI_TABLE = 'wakati'
-TOKENS_TABLE = 'tokens'
+WIKI_PAGES_TABLE = 'wiki_pages'
+WIKI_PAGES_PRIMARY_KEY  = 'id'
+WIKI_PAGES_TITLE_KEY = 'title'
+WIKI_PAGES_URL_KEY = 'url'
 
-# カラム名
-PAGES_PRIMARY_KEY  = 'page_id'
-PAGES_URL_KEY = 'url'
-PAGE_TITLE_KEY = 'title'
+WIKI_CONTENTS_TABLE = 'wiki_contents'
+WIKI_CONTENTS_PRIMARY_KEY = 'id'
+WIKI_CONTENTS_TEXT_KEY = 'text'
 
-CONTENTS_PRIMARY_KEY = 'page_id'
-CONTENTS_TEXT_KEY = 'text'
-
-WAKATI_PRIMARY_KEY = 'page_id'
-WAKATI_TEXT_KEY = 'wakati'
+WIKI_TOKENIZED_TABLE = 'wiki_tokenized'
+WIKI_TOKENIZED_PRIMARY_KEY = 'id'
+WIKI_TOKENIZED_WAKATI_TEXT_KEY = 'wakati_text'

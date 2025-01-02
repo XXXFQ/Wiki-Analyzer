@@ -1,7 +1,7 @@
-from .database.wiki_table_manager import WikiTableManager
-from .database.constants import (
-    WAKATI_TABLE,
-    WAKATI_TEXT_KEY
+from ..database import SQLiteHandler
+from ..database.constants import (
+    WIKI_TOKENIZED_TABLE,
+    WIKI_TOKENIZED_WAKATI_TEXT_KEY
 )
 
 class SQLiteCorpus:
@@ -19,10 +19,10 @@ class SQLiteCorpus:
 
         Attributes
         ----------
-        db_path : str
-            Stores the path to the SQLite database.
+        db_connection : SQLiteHandler
+            Database connection handler.
         '''
-        self.db_path = database_path
+        self.db_connection = SQLiteHandler(database_path)
 
     def __iter__(self):
         '''
@@ -35,11 +35,10 @@ class SQLiteCorpus:
         list of str
             A list of tokens from each row of tokenized text in the database.
         '''
-        with WikiTableManager(self.db_path) as db_manager:
-            # Query to retrieve tokenized text from the database
-            query = f"SELECT {WAKATI_TEXT_KEY} FROM {WAKATI_TABLE}"
-            rows = db_manager.execute_query(query)
+        # Query to retrieve tokenized text from the database
+        query = f"SELECT {WIKI_TOKENIZED_WAKATI_TEXT_KEY} FROM {WIKI_TOKENIZED_TABLE}"
+        rows = self.db_connection.execute_query(query)
 
-            # Process each row and yield the tokenized text
-            for row in rows.fetchall():
-                yield row[0].split()
+        # Process each row and yield the tokenized text
+        for row in rows.fetchall():
+            yield row[0].split()
