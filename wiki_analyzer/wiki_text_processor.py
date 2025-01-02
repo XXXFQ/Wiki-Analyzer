@@ -59,7 +59,7 @@ class WikiTextProcessor:
             # Add each document to the database
             for doc in wiki_docs:
                 text_content = re.sub(r'^\n.+\n\n', '', doc.text) # Remove unwanted leading text
-                wiki_pages_table_handler.insert_page(doc['id'], doc['url'], doc['title'])
+                wiki_pages_table_handler.insert_page(doc['id'], doc['title'], doc['url'])
                 wiki_contents_table_handler.insert_contents(doc['id'], text_content)
 
         # Commit changes

@@ -1,44 +1,42 @@
 # Wiki-Analyzer
 
-Wiki-Analyzerは、Wikipediaのデータを取得し、そのデータを基にword2vecモデルを作成するプログラムです。このツールは、自然言語処理や機械学習の研究に役立ちます。
+Wiki-Analyzer is a program designed to retrieve data from Wikipedia and create a Word2Vec model based on that data.
 
-## セットアップ
+## Setup
 
-以下の手順に従って、リポジトリをクローンし、必要なPythonパッケージをインストールしてください。
+1. Clone the repository:
 
-1. リポジトリをクローンする:
+   ```bash
+   git clone https://github.com/XXXFQ/Wiki-Analyzer.git
+   cd Wiki-Analyzer
+   ```
 
-```bash
-git clone https://github.com/XXXFQ/Wiki-Analyzer.git
-cd Wiki-Analyzer
-```
+2. Install the required packages:
 
-2. 必要なパッケージをインストールする:
+    ```bash
+    poetry install
+    ```
 
-```bash
-pip install -r requirements.txt
-```
+## Downloading Wikipedia Data
 
-## Wikipediaデータのダウンロード
-
-以下のコマンドを実行して、最新の日本語版Wikipediaデータをダウンロードしてください。
+Run the following command to download the latest Japanese Wikipedia data:
 
 ```bash
 curl https://dumps.wikimedia.org/jawiki/latest/jawiki-latest-pages-articles.xml.bz2 -o jawiki-latest-pages-articles.xml.bz2
 ```
 
-## ダンプデータから記事本文を抽出
+## Extracting Articles from the Dump Data
 
-以下のコマンドでダウンロードしたXMLデータを解凍し、記事本文を抽出します。
+Use the following command to extract article content from the downloaded XML data:
 
 ```bash
 python -m wikiextractor.WikiExtractor jawiki-latest-pages-articles.xml.bz2
 ```
 
-## 動作環境
+## Environment Requirements
 
-* **Python**: 3.11.4
+* **Python**: 3.10
 
-## 著作権表示
+## Copyright
 
 Copyright (C) 2025 ARM

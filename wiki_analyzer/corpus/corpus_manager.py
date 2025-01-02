@@ -19,10 +19,10 @@ class SQLiteCorpus:
 
         Attributes
         ----------
-        db_connection : SQLiteHandler
-            Database connection handler.
+        database_path : str
+            Path to the SQLite database containing Wikipedia data.
         '''
-        self.db_connection = SQLiteHandler(database_path)
+        self.database_path = database_path
 
     def __iter__(self):
         '''
@@ -35,10 +35,11 @@ class SQLiteCorpus:
         list of str
             A list of tokens from each row of tokenized text in the database.
         '''
-        # Query to retrieve tokenized text from the database
-        query = f"SELECT {WIKI_TOKENIZED_WAKATI_TEXT_KEY} FROM {WIKI_TOKENIZED_TABLE}"
-        rows = self.db_connection.execute_query(query)
+        with SQLiteHandler(self.database_path) as db_connection:
+            # Query to retrieve tokenized text from the database
+            query = f"SELECT {WIKI_TOKENIZED_WAKATI_TEXT_KEY} FROM {WIKI_TOKENIZED_TABLE}"
+            rows = db_connection.execute_query(query)
 
-        # Process each row and yield the tokenized text
-        for row in rows.fetchall():
-            yield row[0].split()
+            # Process each row and yield the tokenized text
+            for row in rows.fetchall():
+                yield row[0].split()

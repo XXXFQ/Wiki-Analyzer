@@ -28,7 +28,7 @@ class WikiPagesTableHandler(TableHandlerInterface):
         
         super().__init__(db_connection, table_name, columns_with_types, WIKI_PAGES_PRIMARY_KEY)
     
-    def insert_page(self, page_id: int, url: str, title: str):
+    def insert_page(self, page_id: int, title: str, url: str):
         '''
         Insert page information into the database.
 
@@ -36,11 +36,11 @@ class WikiPagesTableHandler(TableHandlerInterface):
         ----------
         page_id : int
             Page ID.
-        url : str
-            URL of the page.
         title : str
             Title of the page.
+        url : str
+            URL of the page.
         '''
         columns, placeholders = self._prepare_columns_and_placeholders(self.columns_with_types)
         query = f"REPLACE INTO {self.table_name} ({columns}) VALUES ({placeholders})"
-        self.db_connection.execute_query(query, (page_id, url, title))
+        self.db_connection.execute_query(query, (page_id, title, url))
