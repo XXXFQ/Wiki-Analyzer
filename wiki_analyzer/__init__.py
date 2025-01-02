@@ -1,23 +1,23 @@
 import glob
 
+from .config import DATABASE_PATH
+from .database_initializer import DatabaseInitializer
 from .wiki_text_processor import WikiTextProcessor
-from .database.wiki_table_manager import WikiTableManager
-from .config import DB_PATH
 
 def main():
     '''
-    メイン関数
+    Main function for processing Wikipedia data.
     '''
-    # Wikipediaのデータのパスを取得
+    # Get paths to Wikipedia data files
     wiki_data_paths = sorted(glob.iglob("data/text/*/wiki_*"))
-    
-    # Wikipediaのデータを処理するクラスを初期化
-    processor = WikiTextProcessor(DB_PATH)
-    
-    # データベースを初期化
+
+    # Initialize the database and insert Wikipedia data
+    DatabaseInitializer().initialize()
+
+    processor = WikiTextProcessor(DATABASE_PATH)
     processor.setup_database(wiki_data_paths)
-    
-    # Wikipediaの記事を形態素解析
+
+    # Perform morphological analysis on Wikipedia articles
     processor.parse_wiki_text()
 
 __all__ = [

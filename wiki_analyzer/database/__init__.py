@@ -1,5 +1,13 @@
-from .wiki_table_manager import WikiTableManager
+from .common import SQLiteHandler
+from .table_handlers import (
+    WikiContentsTableHandler,
+    WikiPagesTableHandler,
+    WikiTokenizedTableHandler
+)
 
 __all__ = [
-    'WikiTableManager'
+    'SQLiteHandler',
+    'WikiContentsTableHandler',
+    'WikiPagesTableHandler',
+    'WikiTokenizedTableHandler'
 ]

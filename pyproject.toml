@@ -1,25 +1,26 @@
 [tool.poetry]
 name = "wiki-analyzer"
-version = "0.1.0"
+version = "0.2.0"
 description = ""
 authors = ["ARM0930 <72128692+XXXFQ@users.noreply.github.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">=3.9,<3.11"
 beautifulsoup4 = "^4.12.3"
+colorlog = "^6.9.0"
 gensim = "^4.3.3"
 lxml = "^5.3.0"
 mecab-python3 = "^1.0.10"
 poetry = "^1.8.4"
-SudachiPy = "^0.6.9"
-sudachidict-core = "^20241021"
 tqdm = "^4.67.0"
 unidic-lite = "^1.0.8"
 wikiextractor = "^3.0.6"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"
+SudachiPy = "^0.6.9"
+sudachidict-core = "^20241021"
 
 [build-system]
 requires = ["poetry-core"]
