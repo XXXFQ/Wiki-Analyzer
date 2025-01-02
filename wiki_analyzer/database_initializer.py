@@ -27,14 +27,6 @@ class DatabaseInitializer:
 
         # Create indexes
         self._execute_handlers("create_index", "Indexes created.")
-
-        # Insert initial data
-        self._insert_initial_data()
-        logger.info("Initial data inserted.")
-
-        # Create views
-        self._create_views()
-        logger.info("Views created.")
         
         # Commit changes
         self.db_connection.commit()

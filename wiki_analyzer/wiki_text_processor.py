@@ -12,6 +12,9 @@ from .database import (
     WikiPagesTableHandler,
     WikiTokenizedTableHandler
 )
+from .utils import Logger
+
+logger = Logger.get_logger(__name__)
 
 class WikiTextProcessor:
     '''
@@ -46,6 +49,7 @@ class WikiTextProcessor:
         wiki_pages_table_handler = WikiPagesTableHandler(self.db_connection)
         
         # Insert Wikipedia data into the database
+        logger.info("Inserting Wikipedia data into the database.")
         for data_path in tqdm(wiki_data_paths, desc="Inserting Wikipedia data"):
             with open(data_path, 'r', encoding='UTF-8') as file:
                 xml_content = file.read()
@@ -58,8 +62,9 @@ class WikiTextProcessor:
                 wiki_pages_table_handler.insert_page(doc['id'], doc['url'], doc['title'])
                 wiki_contents_table_handler.insert_contents(doc['id'], text_content)
 
-            # Commit changes
-            self.db_connection.commit()
+        # Commit changes
+        self.db_connection.commit()
+        logger.info("Wikipedia data inserted successfully.")
 
     def parse_wiki_text(self):
         '''
@@ -70,6 +75,7 @@ class WikiTextProcessor:
         query = f"SELECT * FROM {WIKI_CONTENTS_TABLE}"
         rows = self.db_connection.execute_query(query)
         
+        logger.info("Parsing Wikipedia text.")
         for page_id, content in tqdm(rows.fetchall(), desc="Parsing Wikipedia text"):
             normalized_text = unicodedata.normalize('NFKC', content)
             tokenized_text = text_tokenizer.tokenize(normalized_text)
@@ -77,3 +83,4 @@ class WikiTextProcessor:
             wiki_tokenized_table_handler.insert_wakati(page_id, cleaned_text)
 
         self.db_connection.commit()
+        logger.info("Wikipedia text parsed successfully.")

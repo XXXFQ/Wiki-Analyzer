@@ -37,9 +37,8 @@ python -m wikiextractor.WikiExtractor jawiki-latest-pages-articles.xml.bz2
 
 ## 動作環境
 
-* **OS**: Windows 11 Home
-* **Python**: 3.11
+* **Python**: 3.11.4
 
 ## 著作権表示
 
-Copyright (C) 2024 ARM
+Copyright (C) 2025 ARM
